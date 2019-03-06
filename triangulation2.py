@@ -1,6 +1,6 @@
 import time
 
-# Average time over 1000 runs triangulating up to 8: 0.08824707999999985
+# Average time over 1000 runs triangulating up to 8: 0.008359607000000017
 
 class triangulation: 
     def __init__(self, _vertices, _zero_index):
@@ -63,16 +63,18 @@ class triangulation:
 
 def triangulate_up_to(n):
     quad_triangulations = [triangulation([(0, [2]), (1,[]), (2,[0]), (3,[])],0), triangulation([(0, []), (1,[3]), (2,[]), (3,[1])],0)]
-    print(len(quad_triangulations))
+    #print(len(quad_triangulations))
     last_triangulations = quad_triangulations
     for i in range(5, n+1):
         last_triangulations = triangulate(i, last_triangulations);
-        print(len(last_triangulations))
+        #print(len(last_triangulations))
         #for j in range(0, len(last_triangulations)):
         #    print(last_triangulations[j])
 
 def triangulate(n, previous_triangulations):
     
+    time1 = time.process_time()
+
     triangulations = []
 
     for triangulation in previous_triangulations: 
@@ -99,15 +101,20 @@ def triangulate(n, previous_triangulations):
             triangulations.append(rotated_triangulation)
         i += 1
 
+    time2 = time.process_time()
+    print("time for n: " + str(time2-time1))
+
     return triangulations
 
-total_time = 0
-for i in range(0, 1000):
-    time1 = time.process_time()
-    triangulate_up_to(8)
-    time2 = time.process_time()
-    total_time = total_time + (time2 - time1)
-print(str(total_time/100))
+triangulate_up_to(15)
+
+# total_time = 0
+# for i in range(0, 1000):
+#     time1 = time.process_time()
+#     triangulate_up_to(8)
+#     time2 = time.process_time()
+#     total_time = total_time + (time2 - time1)
+# print(str(total_time/1000))
 
 
 
