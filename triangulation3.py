@@ -1,7 +1,5 @@
 import time
 
-# Average time over 1000 runs triangulating up to 8: 0.08824707999999985
-
 class triangulation: 
     def __init__(self, _vertices, _zero_index):
         self.vertices = _vertices
@@ -74,29 +72,29 @@ def triangulate_up_to(n):
 def triangulate(n, previous_triangulations):
     
     triangulations = []
+    previous_triangulations_redundant = [0] * len(previous_triangulations)
 
     for triangulation in previous_triangulations: 
         triangulation.add_ear()
 
     i = 0
     while i < len(previous_triangulations):
-        triangulation = previous_triangulations[i]
-        #print(triangulation)
-        triangulations.append(triangulation)
-        for j in range(1, n):
-            rotated_triangulation = triangulation.rotate(j)
-            #print("rotated:" + str(rotated_triangulation))
-            if rotated_triangulation.equals(triangulation):
-                #print("self-repeat")
-                break
-            k = i
-            while (k < len(previous_triangulations)):
-                triangulation2 = previous_triangulations[k]
-                if rotated_triangulation.equals(triangulation2):
-                    previous_triangulations.pop(k)
-                else:
-                    k += 1
-            triangulations.append(rotated_triangulation)
+        if previous_triangulations_redundant[i] == 0:
+            triangulation = previous_triangulations[i]
+            #print(triangulation)
+            triangulations.append(triangulation)
+            for j in range(1, n):
+                rotated_triangulation = triangulation.rotate(j)
+                #print("rotated:" + str(rotated_triangulation))
+                if rotated_triangulation.equals(triangulation):
+                    #print("self-repeat")
+                    break
+                for k in range(i, len(previous_triangulations)):
+                    if previous_triangulations_redundant[k] == 0:
+                        triangulation2 = previous_triangulations[k]
+                        if rotated_triangulation.equals(triangulation2):
+                            previous_triangulations_redundant[k] = 1
+                triangulations.append(rotated_triangulation)
         i += 1
 
     return triangulations
