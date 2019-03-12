@@ -102,7 +102,7 @@ def triangulate(n, previous_triangulations):
         i += 1
 
     time2 = time.process_time()
-    print("time for n: " + str(time2-time1))
+    print("time for " + str(n) + ": " + str(time2-time1))
 
     return triangulations
 

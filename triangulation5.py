@@ -1,6 +1,6 @@
 import time
 
-# average time over 1000 runs triangulating up to 8: 0.0005511499999999994
+# average time over 1000 runs triangulating up to 8: 0.005511499999999994
 
 class polygon:
     def __init__(self, size):
@@ -144,18 +144,19 @@ def triangulate(n):
 #for triangulation in t:
 #    print(triangulation)
 
-i=3
-while(true):
-    time1 = time.process_time()
-    t = triangulate(i)
-    time2 = time.process_time()
-    print("time for " + str(i) + ":" + str(time2 - time1))
-    print(len(t))
-
-# total_time = 0
-# for i in range(0, 1000):
+# i=3
+# while(true):
 #     time1 = time.process_time()
-#     print(len(triangulate(8)))
+#     t = triangulate(i)
 #     time2 = time.process_time()
-#     total_time = total_time + (time2 - time1)
-# print(str(total_time/100))
+#     print("time for " + str(i) + ":" + str(time2 - time1))
+#     print(len(t))
+
+# IT WAS USING THE ALREADY FOUND TRIANGULATIONS.. Y OU FOOL 
+total_time = 0
+for i in range(0, 1000):
+    time1 = time.process_time()
+    print(len(triangulate(8)))
+    time2 = time.process_time()
+    total_time = total_time + (time2 - time1)
+print(str(total_time/1000))
