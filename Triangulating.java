@@ -46,16 +46,76 @@ class Triangulating{
         System.out.println(t.equals(t2));
     }
 
+    private class CyclicList<E>{
+        CNode<E> head;
+        int size;
+
+        public CyclicList(E element){
+            head = new CNode<E>(E);
+            head.setPrev(head);
+            head.setNext(head);
+            size = 1; 
+        }
+
+        // Adds a new element directly before the head node
+        public void add(E element){
+            CNode<E> tail = head.prev;
+            tail.setNext(new CNode<E>(element));
+            tail.next.setNext(head);
+            size += 1;
+        }
+
+        public void rotate(int n){
+            CNode<E> curr = head; 
+            for (int i=0; i<n; i++){
+                curr = curr.next;
+            }
+            head = curr;
+        }
+
+    }
+
+    private class CNode<E>{
+        CNode<E> prev;
+        CNode<E> next;
+        E element;
+
+        public CNode(E _element){
+            element = _element;
+            prev = null;
+            next = null;
+        }
+
+        public void setPrev(CNode<E> _prev){
+            prev = _prev;
+        }
+
+        public void setNext(CNode<E> _next){
+            next = _next;
+        }
+
+        public E element(){
+            return element;
+        }
+
+        public CNode<E> next(){
+            return next;
+        }
+
+        public CNode<E> prev(){
+            return prev;
+        }
+    }
+
     private class Triangulation{
 
-        LinkedList<Integer>[] vertices;
+        CyclicList<LinkedList<Integer>> vertices;
         int[] connection_numbers;
         int zeroindex;
         int size;
 
-        public Triangulation(LinkedList<Integer>[] _vertices, int[] _connection_numbers, int _zeroindex, int _size){
+        public Triangulation(CyclicList<LinkedList<Integer>> _vertices, int[] _connection_numbers, int _size){
             vertices = _vertices;
-            zeroindex = _zeroindex;
             size = _size;
             connection_numbers = _connection_numbers;
         }
@@ -67,56 +127,37 @@ class Triangulating{
                 replacement_key[i] = (int)((i + n) % size);
             }
 
-            LinkedList<Integer>[] new_vertices = (LinkedList<Integer>[])new Object[size];
-            for(int i=0; i<size; i++){
+            CyclicList<LinkedList<Integer>> new_vertices = new CyclicList<LinkedList<Integer>>();
+            CNode<LinkedList<Integer>> curr_node = vertices.head;
+
+            for (int i=0; i<size; i++){
                 if (connection_numbers[i] > 0){
-                    new_vertices[i] = new LinkedList<Integer>();
-                    ListIterator<Integer> iter = vertices[i].listIterator(0);
+                    LinkedList<Integer> new_connections = new LinkedList<Integer>();
+                    LinkedList<Integer> old_connections = curr_node.element();
+                    ListIterator<Integer> iter = old_connections.listIterator();
                     for (int j=0; j<connection_numbers[i]; j++){
-                        new_vertices[i].add(replacement_key[iter.next()]);
+                        new_connections.add(replacement_key[iter.next()]);
                     }
+                } else {
+                    new_vertices.add(new LinkedList<Integer>());
                 }
-
+                iter = iter.next();
             }
 
-            int new_zeroindex = int_modulo(zeroindex - n, size);
-            return new Triangulation(new_vertices, connection_numbers, new_zeroindex, size);
-        }
-
-        public void connect_vertices(int n1, int n2){
-            int n1_index = int_modulo((n1 + zeroindex), size);
-            int n2_index = int_modulo((n2 + zeroindex), size);
-            if (vertices[n1_index] == null){
-                vertices[n1_index] = new LinkedList<Integer>();
-            }
-            if (vertices[n2_index] == null){
-                vertices[n2_index] = new LinkedList<Integer>();
-            }
-            ListIterator<Integer> iter1 = vertices[n1_index].listIterator();
-            while (iter1.hasNext()){
-                int n = iter1.next();
-                if (n <= n2){
-                    iter1.previous();
-                    break;
-                } 
-            }
-            iter1.add(n2);
-
-            ListIterator<Integer> iter2 = vertices[n2_index].listIterator();
-            while (iter2.hasNext()){
-                int n = iter2.next();
-                if (n <= n1){
-                    iter2.previous();
-                    break;
-                } 
-            }
-            iter2.add(n1);
+            new_vertices.rotate(n);
+            return new Triangulation(new_vertices, connection_numbers, size);
         }
 
         public void add_ear(){
-            connect_vertices(zeroindex, int_modulo(zeroindex - 1, size));
-            // Make a copy starting from zero_index (so new zero_index is 0, and one bigger) and return?
-            // Or like ... make it all linked lists so insertion is easier .. what am I doing that's array specific? 
+            CNode<LinkedList<Integer>> head = vertices.head();
+            CNode<LinkedList<Integer>> tail = vertices.head().prev();
+
+            head.element().add(size-1);
+            tail.element().addFirst(0);
+            head.setPrev(new CNode<E>(new LinkedList<Integer>()));
+            tail.setNext(head.prev());
+
+            size = size + 1;
         }
 
         @Override
