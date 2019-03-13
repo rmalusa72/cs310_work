@@ -2,6 +2,8 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.ArrayList;
 
+// What if we replaced list of ints with list of many booleans? 
+
 class Triangulating{
 
     public static void main(String[] args){
@@ -11,6 +13,14 @@ class Triangulating{
 
     public static int int_modulo(int a, int b){
         return (int)((a % b) + b) % b;
+    }
+
+    public static void recenter_list(CyclicList<Integer> clist){
+        CNode<Integer> curr = clist.head();
+        while(curr.element() < curr.next().element()){
+            curr = curr.next();
+        }
+        clist.setHead(curr.next());
     }
 
     public void run(){
@@ -44,6 +54,17 @@ class Triangulating{
 
         t.add_ear();
         System.out.println(t);
+        t = t.rotate(1);
+        System.out.println(t);
+        t = t.rotate(1);
+        System.out.println(t);
+        t = t.rotate(1);
+        System.out.println(t);
+        t = t.rotate(1);
+        System.out.println(t);
+        t = t.rotate(1);
+        System.out.println(t);
+
     }
 
     private class CyclicList<E>{
@@ -109,6 +130,10 @@ class Triangulating{
                 curr = curr.prev;
             }
             head = curr;
+        }
+
+        public void setHead(CNode<E> _head){
+            head = _head;
         }
 
         @Override
@@ -185,7 +210,9 @@ class Triangulating{
                         new_connections.add(replacement_key[curr_inner_node.element()]);
                         curr_inner_node = curr_inner_node.next();
                     }
-                    // Rotate new_connections to recenter
+                    System.out.println(new_connections);
+                    recenter_list(new_connections);
+                    System.out.println(new_connections);
                     new_vertices.add(new_connections);
                 } else {
                     new_vertices.add(new CyclicList<Integer>());
