@@ -12,12 +12,13 @@ class Triangulating{
         return (int)((a % b) + b) % b;
     }
 
+    // Changes the head of a ciphered cyclic list of integers to make it be in order
+    // Note: designed for lists that have been rotated 1 step, so only checks out first and second notes! 
     public static void recenter_list(CyclicList<Integer> clist){
-        CNode<Integer> curr = clist.head();
-        while(curr.element() < curr.next().element()){
-            curr = curr.next();
+        CNode<Integer> head = clist.head();
+        if (head.element() > head.prev().element()){
+            clist.setHead(head.prev());
         }
-        clist.setHead(curr.next());
     }
 
     // Figure out if one way of eliminating duplicates here is more efficient
@@ -48,7 +49,7 @@ class Triangulating{
 
                     // System.out.println("Rotation #" + j);
 
-                    t = t.rotate(1);
+                    t = t.rotate();
 
                     // System.out.println("Rotated #" + j);
 
@@ -62,13 +63,13 @@ class Triangulating{
                     for(int k=i; k<previous_triangulations.size(); k++){
 
                         // System.out.println("Comparing to #" + k);
-
-                        Triangulation t2 = previous_triangulations.get(k);
-                        if (t.equals(t2)){
-                            // System.out.println("Duplicate found");
-                            duplicated[k] = true;
+                        if(!duplicated[k]){
+                            Triangulation t2 = previous_triangulations.get(k);
+                            if (t.equals(t2)){
+                                // System.out.println("Duplicate found");
+                                duplicated[k] = true;
+                            }
                         }
-
                         // System.out.println("Comparison complete");
                     }
                     new_triangulations.add(t);
@@ -289,6 +290,7 @@ class Triangulating{
             return size;
         }
 
+/*        // Rotate n steps
         public Triangulation rotate(int n){
             int[] replacement_key = new int[size];
             for(int i=0; i<size; i++){
@@ -316,6 +318,39 @@ class Triangulating{
             }
 
             new_vertices.rotate(n);
+
+            return new Triangulation(new_vertices);
+
+        }*/
+
+        // Rotate one step 
+        public Triangulation rotate(){
+            int[] replacement_key = new int[size];
+            for(int i=0; i<size; i++){
+                replacement_key[i] = (i + 1) % size;
+            }
+
+            CyclicList<CyclicList<Integer>> new_vertices = new CyclicList<CyclicList<Integer>>();
+            CNode<CyclicList<Integer>> curr_outer_node = vertices.head();
+
+            for (int i=0; i<size; i++){
+                if(curr_outer_node.element().size() > 0){
+                    CyclicList<Integer> new_connections = new CyclicList<Integer>();
+                    CyclicList<Integer> old_connections = curr_outer_node.element();
+                    CNode<Integer> curr_inner_node = old_connections.head();
+                    for (int j=0; j<curr_outer_node.element().size(); j++){
+                        new_connections.add(replacement_key[curr_inner_node.element()]);
+                        curr_inner_node = curr_inner_node.next();
+                    }
+                    recenter_list(new_connections);
+                    new_vertices.add(new_connections);
+                } else {
+                    new_vertices.add(new CyclicList<Integer>());
+                }
+                curr_outer_node = curr_outer_node.next();
+            }
+
+            new_vertices.rotate(1);
 
             return new Triangulation(new_vertices);
 
