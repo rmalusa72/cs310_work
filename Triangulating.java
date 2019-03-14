@@ -86,27 +86,34 @@ class Triangulating{
 
     public void run(){
 
-        CyclicList<CyclicList<Integer>> vertices4 = new CyclicList<CyclicList<Integer>>();
-        vertices4.add(new CyclicList<Integer>(2));
-        System.out.println(vertices4);
-        vertices4.add(new CyclicList<Integer>());
-        System.out.println(vertices4);
-        vertices4.add(new CyclicList<Integer>(0));
-        System.out.println(vertices4);
-        vertices4.add(new CyclicList<Integer>());
-        System.out.println(vertices4);
-        Triangulation t = new Triangulation(vertices4);
+        CyclicList<CyclicList<Integer>> vertices3 = new CyclicList<CyclicList<Integer>>();
+        vertices3.add(new CyclicList<Integer>());
+        vertices3.add(new CyclicList<Integer>());
+        vertices3.add(new CyclicList<Integer>());
+        Triangulation triangle = new Triangulation(vertices3);
 
-        System.out.println(t);
 
-        CyclicList<CyclicList<Integer>> vertices4_2 = new CyclicList<CyclicList<Integer>>();
-        vertices4_2.add(new CyclicList<Integer>());
-        vertices4_2.add(new CyclicList<Integer>(3));
-        vertices4_2.add(new CyclicList<Integer>());
-        vertices4_2.add(new CyclicList<Integer>(1));
-        Triangulation t2 = new Triangulation(vertices4_2);
+        // CyclicList<CyclicList<Integer>> vertices4 = new CyclicList<CyclicList<Integer>>();
+        // vertices4.add(new CyclicList<Integer>(2));
+        // System.out.println(vertices4);
+        // vertices4.add(new CyclicList<Integer>());
+        // System.out.println(vertices4);
+        // vertices4.add(new CyclicList<Integer>(0));
+        // System.out.println(vertices4);
+        // vertices4.add(new CyclicList<Integer>());
+        // System.out.println(vertices4);
+        // Triangulation t = new Triangulation(vertices4);
 
-        System.out.println(t2);
+        // System.out.println(t);
+
+        // CyclicList<CyclicList<Integer>> vertices4_2 = new CyclicList<CyclicList<Integer>>();
+        // vertices4_2.add(new CyclicList<Integer>());
+        // vertices4_2.add(new CyclicList<Integer>(3));
+        // vertices4_2.add(new CyclicList<Integer>());
+        // vertices4_2.add(new CyclicList<Integer>(1));
+        // Triangulation t2 = new Triangulation(vertices4_2);
+
+        // System.out.println(t2);
 
         // Triangulation rotated_t = t.rotate((int)1);
         // System.out.println(rotated_t);
@@ -127,9 +134,8 @@ class Triangulating{
         // System.out.println(t);
 
         ArrayList<Triangulation> ts = new ArrayList<Triangulation>();
-        ts.add(t);
-        ts.add(t2);
-        for(int i=5; i<40; i++){
+        ts.add(triangle);
+        for(int i=4; i<40; i++){
             ts = triangulate(i, ts);
             System.out.println(ZonedDateTime.now());
             System.out.println(ts.size());
