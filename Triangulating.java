@@ -1,6 +1,7 @@
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.ArrayList;
+import java.time.ZonedDateTime;
 
 // What if we replaced list of ints with list of many booleans? Worse copying, but easier rotation
 // Make sure recentering is not O(n) (it should be O(steps in rotation), which will only ever be 1? But check)
@@ -128,6 +129,7 @@ class Triangulating{
         ts.add(t2);
         for(int i=5; i<40; i++){
             ts = triangulate(i, ts);
+            System.out.println(ZonedDateTime.now());
             System.out.println(ts.size());
         }
 

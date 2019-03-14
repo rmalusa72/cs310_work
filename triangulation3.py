@@ -1,4 +1,5 @@
 import time
+import datetime
 
 class triangulation: 
     def __init__(self, _vertices, _zero_index):
@@ -97,15 +98,18 @@ def triangulate(n, previous_triangulations):
                 triangulations.append(rotated_triangulation)
         i += 1
 
+    print(datetime.datetime.now().time())
     return triangulations
 
-total_time = 0
-for i in range(0, 1000):
-    time1 = time.process_time()
-    triangulate_up_to(8)
-    time2 = time.process_time()
-    total_time = total_time + (time2 - time1)
-print(str(total_time/100))
+triangulate_up_to(30)
+
+# total_time = 0
+# for i in range(0, 1000):
+#     time1 = time.process_time()
+#     triangulate_up_to(8)
+#     time2 = time.process_time()
+#     total_time = total_time + (time2 - time1)
+# print(str(total_time/100))
 
 
 
