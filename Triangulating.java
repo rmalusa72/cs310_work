@@ -35,6 +35,8 @@ class Triangulating{
 
         for(int i=0; i<previous_triangulations.size(); i++){
 
+            System.out.println(i + "/" + previous_triangulations.size());
+
             // System.out.println("Considering previous triangulation #" + i);
 
             if (duplicated[i] == false){
