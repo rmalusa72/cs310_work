@@ -55,6 +55,7 @@ class Triangulating2{
             new_triangulations_list.add(iter.next());
         }
 
+        System.gc();
         return new_triangulations_list;
     }
 
