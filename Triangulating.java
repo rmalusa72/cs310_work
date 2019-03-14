@@ -2,14 +2,10 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.ArrayList;
 
-// What if we replaced list of ints with list of many booleans? 
+// What if we replaced list of ints with list of many booleans? Worse copying, but easier rotation
+// Make sure recentering is not O(n) (it should be O(steps in rotation), which will only ever be 1? But check)
 
 class Triangulating{
-
-    public static void main(String[] args){
-        Triangulating t = new Triangulating();
-        t.run();
-    }
 
     public static int int_modulo(int a, int b){
         return (int)((a % b) + b) % b;
@@ -21,6 +17,68 @@ class Triangulating{
             curr = curr.next();
         }
         clist.setHead(curr.next());
+    }
+
+    // Figure out if one way of eliminating duplicates here is more efficient
+    public static ArrayList<Triangulation> triangulate(int n, ArrayList<Triangulation> previous_triangulations){
+
+        // System.out.println("Triangulating");
+
+        ArrayList<Triangulation> new_triangulations = new ArrayList<Triangulation>(previous_triangulations.size()*5);
+        boolean[] duplicated = new boolean[previous_triangulations.size()];
+        for (int i=0; i<previous_triangulations.size(); i++){
+            previous_triangulations.get(i).add_ear();
+        }
+
+        // System.out.println("Ears added");
+
+        for(int i=0; i<previous_triangulations.size(); i++){
+
+            // System.out.println("Considering previous triangulation #" + i);
+
+            if (duplicated[i] == false){
+                Triangulation t = previous_triangulations.get(i);
+                Triangulation initial_t = t;
+                new_triangulations.add(t);
+
+                for(int j=0; j<n; j++){
+
+                    // System.out.println("Rotation #" + j);
+
+                    t = t.rotate(1);
+
+                    // System.out.println("Rotated #" + j);
+
+                    if (t.equals(initial_t)){
+                        // System.out.println("breaking");
+                        break;
+                    }
+
+                    // System.out.println("Comparing to others");
+
+                    for(int k=i; k<previous_triangulations.size(); k++){
+
+                        // System.out.println("Comparing to #" + k);
+
+                        Triangulation t2 = previous_triangulations.get(k);
+                        if (t.equals(t2)){
+                            // System.out.println("Duplicate found");
+                            duplicated[k] = true;
+                        }
+
+                        // System.out.println("Comparison complete");
+                    }
+                    new_triangulations.add(t);
+                }                
+            }
+        }
+
+        return new_triangulations;
+    }
+
+    public static void main(String[] args){
+        Triangulating t = new Triangulating();
+        t.run();
     }
 
     public void run(){
@@ -47,23 +105,45 @@ class Triangulating{
 
         System.out.println(t2);
 
-        Triangulation rotated_t = t.rotate((int)1);
-        System.out.println(rotated_t);
-        System.out.println(rotated_t.equals(t2));
-        System.out.println(t.equals(t2));
+        // Triangulation rotated_t = t.rotate((int)1);
+        // System.out.println(rotated_t);
+        // System.out.println(rotated_t.equals(t2));
+        // System.out.println(t.equals(t2));
 
-        t.add_ear();
-        System.out.println(t);
-        t = t.rotate(1);
-        System.out.println(t);
-        t = t.rotate(1);
-        System.out.println(t);
-        t = t.rotate(1);
-        System.out.println(t);
-        t = t.rotate(1);
-        System.out.println(t);
-        t = t.rotate(1);
-        System.out.println(t);
+        // t.add_ear();
+        // System.out.println(t);
+        // t = t.rotate(1);
+        // System.out.println(t);
+        // t = t.rotate(1);
+        // System.out.println(t);
+        // t = t.rotate(1);
+        // System.out.println(t);
+        // t = t.rotate(1);
+        // System.out.println(t);
+        // t = t.rotate(1);
+        // System.out.println(t);
+
+        ArrayList<Triangulation> ts = new ArrayList<Triangulation>();
+        ts.add(t);
+        ts.add(t2);
+        for(int i=5; i<40; i++){
+            ts = triangulate(i, ts);
+            System.out.println(ts.size());
+        }
+
+
+        // ArrayList<Triangulation> fours = new ArrayList<Triangulation>();
+        // fours.add(t);
+        // fours.add(t2);
+        // ArrayList<Triangulation> fives = triangulate(5, fours);
+        // System.out.println(fives);
+        // System.out.println(fives.size());
+
+        // ArrayList<Triangulation> sixes = triangulate(6, fives);
+        // System.out.println(sixes.size());
+
+        // ArrayList<Triangulation> sevens = triangulate(7, sixes);
+        // System.out.println(sevens.size());
 
     }
 
@@ -80,7 +160,7 @@ class Triangulating{
 
         public CyclicList(){
             head = null;
-            size = 0; 
+            size = 0;
         }
 
         public CNode<E> head(){
@@ -102,6 +182,7 @@ class Triangulating{
                 CNode<E> tail = head.prev;
                 tail.setNext(new CNode<E>(element));
                 tail.next.setNext(head);
+                tail.next.setPrev(tail);
                 head.setPrev(tail.next);
                 size += 1;
             }
@@ -116,9 +197,11 @@ class Triangulating{
                 size = 1;
             } else {
                 CNode<E> tail = head.prev;
-                tail.setNext(new CNode<E>(element));
-                tail.next.setNext(head);
-                head.setPrev(tail.next);
+                CNode<E> new_head = new CNode<E>(element);
+                tail.setNext(new_head);
+                head.setPrev(new_head);
+                new_head.setPrev(tail);
+                new_head.setNext(head);
                 head = head.prev();
                 size += 1;
             }
@@ -192,6 +275,10 @@ class Triangulating{
             size = vertices.size();
         }
 
+        public int size(){
+            return size;
+        }
+
         public Triangulation rotate(int n){
             int[] replacement_key = new int[size];
             for(int i=0; i<size; i++){
@@ -210,9 +297,7 @@ class Triangulating{
                         new_connections.add(replacement_key[curr_inner_node.element()]);
                         curr_inner_node = curr_inner_node.next();
                     }
-                    System.out.println(new_connections);
                     recenter_list(new_connections);
-                    System.out.println(new_connections);
                     new_vertices.add(new_connections);
                 } else {
                     new_vertices.add(new CyclicList<Integer>());
@@ -230,10 +315,16 @@ class Triangulating{
             CNode<CyclicList<Integer>> head = vertices.head();
             CNode<CyclicList<Integer>> tail = vertices.head().prev();
 
+            // System.out.println("head: " + head);
+            // System.out.println("tail: " + tail);
+
             head.element().add(size-1);
-            tail.element.addFirst(0);
-            head.setPrev(new CNode<CyclicList<Integer>>(new CyclicList<Integer>()));
-            tail.setNext(head.prev());
+            tail.element().addFirst(0);
+            CNode<CyclicList<Integer>> new_tail = new CNode<CyclicList<Integer>>(new CyclicList<Integer>());
+            head.setPrev(new_tail);
+            tail.setNext(new_tail);
+            new_tail.setPrev(tail);
+            new_tail.setNext(head);
 
             size += 1;
         }
@@ -252,13 +343,14 @@ class Triangulating{
             CNode<CyclicList<Integer>> this_curr = this.vertices.head();
             CNode<CyclicList<Integer>> other_curr = other.vertices.head();
             for (int i=0; i<size; i++){
+                // System.out.println("Equals loop");
                 if (this_curr.element().size() != other_curr.element().size()){
                     return false;
                 }
                 if (this_curr.element().size() > 0){
                     CNode<Integer> this_inner_curr = this_curr.element().head();
                     CNode<Integer> other_inner_curr = other_curr.element().head();
-                    for (int j=0; i<this_curr.element().size(); j++){
+                    for (int j=0; j<this_curr.element().size(); j++){
                         if (this_inner_curr.element() != other_inner_curr.element()){
                             return false;
                         }
