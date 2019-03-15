@@ -257,7 +257,6 @@ class Triangulating2{
     private class Triangulation implements Comparable<Triangulation>{
 
         CyclicList<CyclicList<Integer>> vertices;
-        CyclicList<Integer> connection_numbers;
         int size;
 
         public Triangulation(CyclicList<CyclicList<Integer>> _vertices){
