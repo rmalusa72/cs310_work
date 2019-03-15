@@ -4,7 +4,7 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.time.ZonedDateTime;
 
-class Triangulating3{
+class Triangulating4{
 
     public static int int_modulo(int a, int b){
         return (int)((a % b) + b) % b;
@@ -33,16 +33,16 @@ class Triangulating3{
 
     public static void main(String[] args){
 
-        Triangulating3 t = new Triangulating3();
+        Triangulating4 t = new Triangulating4();
         t.run();
     }
 
     public void run(){
 
-        ArrayList<ArrayList<Integer>> vertices3 = new ArrayList<ArrayList<Integer>>();
-        vertices3.add(new ArrayList<Integer>());
-        vertices3.add(new ArrayList<Integer>());
-        vertices3.add(new ArrayList<Integer>());
+        int[][] vertices3 = new int[3][];
+        vertices3[0] = new int[0];
+        vertices3[1] = new int[0];
+        vertices3[2] = new int[0];
         Triangulation triangle = new Triangulation(vertices3);
 
         TreeSet<Triangulation> ts = new TreeSet<Triangulation>();
@@ -57,12 +57,12 @@ class Triangulating3{
 
     private class Triangulation implements Comparable<Triangulation>{
 
-        ArrayList<ArrayList<Integer>> vertices; 
+        int[][] vertices; 
         int size;
 
-        public Triangulation(ArrayList<ArrayList<Integer>> _vertices){
+        public Triangulation(int[][] _vertices){
             vertices = _vertices;
-            size = vertices.size();
+            size = vertices.length;
         }
 
         public int size(){
@@ -73,36 +73,37 @@ class Triangulating3{
         // n between 1 and size
         public Triangulation add_ear(int n){
 
-            ArrayList<ArrayList<Integer>> new_vertices = new ArrayList<ArrayList<Integer>>(size + 1);
-            ArrayList<Integer> new_connections;
-            ArrayList<Integer> old_connections; 
+            int[][] new_vertices = new int[size+1][];
+            int[] new_connections;
+            int[] old_connections; 
 
             if(n == size){
                 // Copy zero vertex, adding connection to vertex n-1
-                new_connections = new ArrayList<Integer>();
-                old_connections = vertices.get(0);
-                for(int i=0; i<old_connections.size(); i++){
-                    new_connections.add(old_connections.get(i));
+                old_connections = vertices[0];
+                new_connections = new int[old_connections.length + 1];
+                for(int i=0; i<old_connections.length; i++){
+                    new_connections[i] = old_connections[i];
                 }
-                new_connections.add(n-1);
-                new_vertices.add(new_connections);
+
+                new_connections[old_connections.length] = n-1;
+                new_vertices[0] = new_connections;
 
                 // Copy nodes up to last
                 for (int i=1; i<size-1; i++){
-                    new_vertices.add(vertices.get(i));
+                    new_vertices[i] = vertices[i];
                 }
 
                 // Copy last node, adding connection to vertex 0
-                new_connections = new ArrayList<Integer>();
-                old_connections = vertices.get(size-1);
-                new_connections.add(0);
-                for(int i=0; i<old_connections.size(); i++){
-                    new_connections.add(old_connections.get(i));
+                old_connections = vertices[size-1];
+                new_connections = new int[old_connections.length + 1];
+                new_connections[0] = 0;
+                for(int i=0; i<old_connections.length; i++){
+                    new_connections[i+1] = old_connections[i];
                 }
-                new_vertices.add(new_connections);
+                new_vertices[size-1] = new_connections;
 
                 // Add new node
-                new_vertices.add(new ArrayList<Integer>());
+                new_vertices[size] = new int[0];
                 return new Triangulation(new_vertices);
 
             }
@@ -110,61 +111,59 @@ class Triangulating3{
 
             // Copy nodes up to inserted vertex, changing labels on connections after inserted vertex
             for(int i=0; i<(n-1); i++){
-                new_connections = new ArrayList<Integer>();
-                old_connections = vertices.get(i);
-                for(int j=0; j<old_connections.size(); j++){
-                    if (old_connections.get(j) < n){
-                        new_connections.add(old_connections.get(j));
+                old_connections = vertices[i];
+                new_connections = new int[old_connections.length];
+                for(int j=0; j<old_connections.length; j++){
+                    if (old_connections[j] < n){
+                        new_connections[j] = old_connections[j];
                     } else { 
-                        new_connections.add(old_connections.get(j) + 1);
+                        new_connections[j] = old_connections[j] + 1;
                     }
                 }
-                new_vertices.add(new_connections);
+                new_vertices[i] = new_connections;
             }
 
             // Handle node directly before inserted vertex; needs connection added to node now labeled n+1
-            new_connections = new ArrayList<Integer>();
-            old_connections = vertices.get(n-1);
+            old_connections = vertices[n-1];
+            new_connections = new int[old_connections.length + 1];
             int k = 0;
-            for(; k<old_connections.size() && old_connections.get(k) < n; k++){
-                new_connections.add(old_connections.get(k));
+            for(; k<old_connections.length && old_connections[k] < n; k++){
+                new_connections[k] = old_connections[k];
             }
-            new_connections.add(n+1);
-            for(; k < old_connections.size(); k++){
-                new_connections.add(old_connections.get(k) + 1);
+            new_connections[k] = n+1;
+            for(; k < old_connections.length; k++){
+                new_connections[k+1] = old_connections[k] + 1;
             }
-
-            new_vertices.add(new_connections);
+            new_vertices[n-1] = new_connections;
 
             // add new node
-            new_connections = new ArrayList<Integer>();
-            new_vertices.add(new_connections);
+            new_vertices[n] = new int[0];
 
             // copy node after new node, adding new connection
-            new_connections = new ArrayList<Integer>();
-            old_connections = vertices.get(n);
+            old_connections = vertices[n];
+            new_connections = new int[old_connections.length + 1];
             k = 0;
-            for(; k < old_connections.size() && old_connections.get(k) < n; k++){
-                new_connections.add(old_connections.get(k));
+            for(; k < old_connections.length && old_connections[k] < n; k++){
+                new_connections[k] = old_connections[k];
             }
-            new_connections.add(n-1);
-            for(; k < old_connections.size(); k++){
-                new_connections.add(old_connections.get(k) + 1);
+            new_connections[k] = n-1;
+            for(; k < old_connections.length; k++){
+                new_connections[k+1] = old_connections[k] + 1;
             }
-            new_vertices.add(new_connections);
+            new_vertices[n+1] = new_connections;
 
             // copy nodes after new node
             for(int i=n+1; i<size; i++){
-                new_connections = new ArrayList<Integer>();
-                old_connections = vertices.get(i);
-                for(int j=0; j<old_connections.size(); j++){
-                    if (old_connections.get(j) < n){
-                        new_connections.add(old_connections.get(j));
+                old_connections = vertices[i];
+                new_connections = new int[old_connections.length];
+                for(int j=0; j<old_connections.length; j++){
+                    if (old_connections[j] < n){
+                        new_connections[j] = old_connections[j];
                     } else { 
-                        new_connections.add(old_connections.get(j) + 1);
+                        new_connections[j] = old_connections[j] + 1;
                     }
                 }
-                new_vertices.add(new_connections);                
+                new_vertices[i+1] = new_connections;             
             }
 
             return new Triangulation(new_vertices);
@@ -184,20 +183,20 @@ class Triangulating3{
             }
 
             for(int i=0; i<size; i++){
-                if (this.vertices.get(i).size() != other.vertices.get(i).size()){
-                    if (this.vertices.get(i).size() < other.vertices.get(i).size()){
+                if (this.vertices[i].length != other.vertices[i].length){
+                    if (this.vertices[i].length < other.vertices[i].length){
                         return -1;
                     }
                     return 1;
                 }
 
-                ArrayList<Integer> this_curr_list = this.vertices.get(i);
-                ArrayList<Integer> other_curr_list = other.vertices.get(i);
+                int[] this_curr_list = this.vertices[i];
+                int[] other_curr_list = other.vertices[i];
 
-                if (this_curr_list.size() > 0){
-                    for(int j=0; j<this_curr_list.size(); j++){
-                        if (this_curr_list.get(j) != other_curr_list.get(j)){
-                            if (this_curr_list.get(j) < other_curr_list.get(j)){
+                if (this_curr_list.length > 0){
+                    for(int j=0; j<this_curr_list.length; j++){
+                        if (this_curr_list[j] != other_curr_list[j]){
+                            if (this_curr_list[j] < other_curr_list[j]){
                                 return -1;
                             }
                             return 1;
@@ -221,16 +220,16 @@ class Triangulating3{
             }
 
             for(int i=0; i<size; i++){
-                if (this.vertices.get(i).size() != other.vertices.get(i).size()){
+                if (this.vertices[i].length != other.vertices[i].length){
                     return false; 
                 }
 
-                ArrayList<Integer> this_curr_list = this.vertices.get(i);
-                ArrayList<Integer> other_curr_list = other.vertices.get(i);
+                int[] this_curr_list = this.vertices[i];
+                int[] other_curr_list = other.vertices[i];
 
-                if (this_curr_list.size() > 0){
-                    for(int j=0; j<this_curr_list.size(); j++){
-                        if (this_curr_list.get(j) != other_curr_list.get(j)){
+                if (this_curr_list.length > 0){
+                    for(int j=0; j<this_curr_list.length; j++){
+                        if (this_curr_list[j] != other_curr_list[j]){
                             return false; 
                         }
                     }
@@ -245,10 +244,10 @@ class Triangulating3{
             String rtn = "";
             for (int i=0; i<size; i++){
                 rtn = rtn + i + ": [";
-                if (vertices.get(i).size() > 0){
-                    ArrayList<Integer> curr_list = vertices.get(i);
-                    for(int j=0; j<curr_list.size(); j++){
-                        rtn = rtn + curr_list.get(j) + ",";
+                if (vertices[i].length > 0){
+                    int[] curr_list = vertices[i];
+                    for(int j=0; j<curr_list.length; j++){
+                        rtn = rtn + curr_list[j] + ",";
                     }
                 }
                 rtn = rtn + "]\n";
