@@ -4,6 +4,8 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.time.ZonedDateTime;
 
+// Crashes on my machine with 191k of the 17-gon triangulations found
+
 class Triangulating3{
 
     public static int int_modulo(int a, int b){
@@ -25,6 +27,9 @@ class Triangulating3{
             for(int j=0; j<previous_triangulations.size(); j++){
                 new_triangulation = iter.next().add_ear(i);
                 new_triangulations.add(new_triangulation);
+                if((new_triangulations.size() % 1000) == 0){
+                    System.out.println(new_triangulations.size());
+                }
             }        
         }
 

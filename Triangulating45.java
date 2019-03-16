@@ -4,9 +4,9 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.time.ZonedDateTime;
 
-// Crashes on my machine with 1.31mil of the 17-gon triangulations found?? 
+// Crashes on my machine with 1.71mil of the 17-gon triangulations found
 
-class Triangulating4{
+class Triangulating45{
 
     public static int int_modulo(int a, int b){
         return (int)((a % b) + b) % b;
@@ -18,17 +18,20 @@ class Triangulating4{
         Iterator<Triangulation> iter;
         TreeSet<Triangulation> new_triangulations = new TreeSet<Triangulation>();
         Triangulation new_triangulation; 
+        Triangulation old_triangulation;
 
         // Eliminate duplicates based on whether they have ears we've already covered? 
-        for(int i=1; i<n-1; i++){
-            iter = previous_triangulations.iterator();
-            for(int j=0; j<previous_triangulations.size(); j++){
-                new_triangulation = iter.next().add_ear(i);
+        iter = previous_triangulations.iterator();
+        while(previous_triangulations.size() > 0){
+            old_triangulation = iter.next();
+            for(int i=1; i<n-1; i++){
+                new_triangulation = old_triangulation.add_ear(i);
                 new_triangulations.add(new_triangulation);
                 if((new_triangulations.size() % 1000) == 0){
                     System.out.println(new_triangulations.size());
-                }    
-            }    
+                }  
+            }
+            iter.remove();
         }
 
         return new_triangulations;
@@ -36,7 +39,7 @@ class Triangulating4{
 
     public static void main(String[] args){
 
-        Triangulating4 t = new Triangulating4();
+        Triangulating45 t = new Triangulating45();
         t.run();
     }
 
