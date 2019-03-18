@@ -2,13 +2,17 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileInputStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter; 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.io.FileInputStream;
 
-class Triangulate3{
+class Triangulate4{
 
     public static void main(String[] args){
         if (args.length == 0){
@@ -27,11 +31,11 @@ class Triangulate3{
                     print = true;
                 }
             }
-            Triangulate3 t = new Triangulate3(n, print);
+            Triangulate4 t = new Triangulate4(n, print);
         }
     }
 
-    public Triangulate3(int n, boolean print){
+    public Triangulate4(int n, boolean print){
         byte[][] vertices3 = new byte[3][];
         vertices3[0] = new byte[0];
         vertices3[1] = new byte[0];
@@ -40,10 +44,8 @@ class Triangulate3{
         int ts_size = 1;
 
         try{
-            String writefilepath = "ts3";
-            File writefile = new File(writefilepath);
-            FileOutputStream writer = new FileOutputStream(writefile);
-
+            
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File("ts3")));
             writer.write(255);
             for(int i=0; i<3; i++){
                 writer.write(255);
@@ -51,7 +53,6 @@ class Triangulate3{
                     writer.write(triangle.vertices[i][j]);
                 }
                 writer.write(255);
-                writer.flush();
             }
             writer.write(255);
             writer.close();
@@ -76,12 +77,12 @@ class Triangulate3{
     public int triangulate(int n, int last_size, boolean print){
 
         int num_triangulations = 0; 
-        String readfilepath = "ts" + (n-1);
-        File readfile = new File(readfilepath);
-        FileInputStream reader;
 
         try{
-            reader = new FileInputStream(readfile);
+            File readfile = new File("ts" + (n-1));
+            BufferedReader reader = new BufferedReader(new FileReader(readfile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File("ts" + n)));
+
             int triangulations_read = 0;
             byte[][] last_triangulation_vertices = new byte[n-1][];
             boolean in_triangulation = false;
@@ -89,11 +90,6 @@ class Triangulate3{
             ArrayList<Byte> current_connections_list; 
             Triangulation old_triangulation; 
             Triangulation new_triangulation; 
-
-            String writefilepath = "ts" + n;
-            File writefile = new File(writefilepath);
-            FileOutputStream writer = new FileOutputStream(writefile);
-            Triangulation write_triangulation; 
 
             while(triangulations_read < last_size){
                 int next = reader.read();
@@ -136,9 +132,9 @@ class Triangulate3{
                             }
                             writer.write(255);
                             num_triangulations = num_triangulations + 1; 
-			    if(num_triangulations % 100000 == 0){
-				System.out.println(num_triangulations);
-			    }
+			                if(num_triangulations % 100000 == 0){
+				                System.out.println(num_triangulations);
+			                }
                             // if print, print this triangulation
                         }
 
@@ -152,6 +148,8 @@ class Triangulate3{
             reader.close();
             writer.flush();
             writer.close();
+            readfile.delete();
+
 
         } catch(IOException e){
             System.out.println(e.getMessage());
@@ -165,7 +163,7 @@ class Triangulate3{
     // Represents a single triangulation of an n-gon 
     // Each byte[] in vertices represents a vertex's set of connections to other vertices
     // Each byte[] also has entries kept in sorted order, so that comparisons are fast
-    private class Triangulation implements Comparable<Triangulation>{
+    private class Triangulation{
         byte[][] vertices; 
         int size;
 
@@ -284,77 +282,6 @@ class Triangulate3{
             }
 
             return new Triangulation(new_vertices);
-        }
-
-        // Orders triangulations by 1) number of connections at each vertex and
-        // 2) if there are the same amount, lexicographic ordering of connection labels
-        public int compareTo(Triangulation other){
-            if (other.equals(null)){
-                throw new NullPointerException();
-            }
-
-            if (other.size != this.size){
-                if (this.size < other.size){
-                    return -1;
-                }
-                return 1; 
-            }
-
-            for(int i=0; i<size; i++){
-                if (this.vertices[i].length != other.vertices[i].length){
-                    if (this.vertices[i].length < other.vertices[i].length){
-                        return -1;
-                    }
-                    return 1;
-                }
-
-                byte[] this_curr_list = this.vertices[i];
-                byte[] other_curr_list = other.vertices[i];
-
-                if (this_curr_list.length > 0){
-                    for(int j=0; j<this_curr_list.length; j++){
-                        if (this_curr_list[j] != other_curr_list[j]){
-                            if (this_curr_list[j] < other_curr_list[j]){
-                                return -1;
-                            }
-                            return 1;
-                        }
-                    }
-                }
-            }
-
-            return 0; 
-        }
-
-        @Override 
-        public boolean equals(Object o){
-            if (!(o instanceof Triangulation)){
-                return false;
-            }
-
-            Triangulation other = (Triangulation) o;
-            if (other.size != this.size){
-                return false; 
-            }
-
-            for(int i=0; i<size; i++){
-                if (this.vertices[i].length != other.vertices[i].length){
-                    return false; 
-                }
-
-                byte[] this_curr_list = this.vertices[i];
-                byte[] other_curr_list = other.vertices[i];
-
-                if (this_curr_list.length > 0){
-                    for(int j=0; j<this_curr_list.length; j++){
-                        if (this_curr_list[j] != other_curr_list[j]){
-                            return false; 
-                        }
-                    }
-                }
-            }
-
-            return true; 
         }
 
         @Override

@@ -15,3 +15,6 @@ Triangulating6: memory problem, 9694845 in a minute 11, then ran out of heap spa
 (changed int array to byte array)
 Triangulate: Same as Triangulating6
 Triangulate2: File writing; much slower; ran out of heap space 2.6 mil into next one?? 
+Triangulate3: File writing and reading simultaneously and no tree; 
+	- triangulate3 takes 56sec to get to 208012 on my machine
+	- triangulate4, with buffered reader and writer, takes about 1 sec
