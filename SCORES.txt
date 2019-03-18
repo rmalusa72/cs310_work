@@ -13,3 +13,5 @@ Triangulating45: memory problem, 208012 in 1 second, 742900 in 4 seconds, 267440
 Triangulating5: inadvertently made everything worse with booleans. i hate this one
 Triangulating6: memory problem, 9694845 in a minute 11, then ran out of heap space 3.2 mil into next one
 (changed int array to byte array)
+Triangulate: Same as Triangulating6
+Triangulate2: File writing; much slower; ran out of heap space 2.6 mil into next one?? 
