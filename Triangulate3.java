@@ -118,7 +118,7 @@ class Triangulate3{
                     for(int i=1; i<n-1; i++){
                         new_triangulation = old_triangulation.add_ear(i);
                         boolean duplicate = false;
-                        for(int j = 1; j<i; j++){
+                        for(int j = 1; j<i-1; j++){
                             if (new_triangulation.is_ear(j)){
                                 duplicate = true;
                                 break;
