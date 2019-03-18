@@ -134,7 +134,6 @@ class Triangulate3{
                                 writer.write(255);
                             }
                             writer.write(255);
-                            writer.flush();
                             num_triangulations = num_triangulations + 1; 
 
                             // if print, print this triangulation
@@ -148,6 +147,7 @@ class Triangulate3{
             }
 
             reader.close();
+            writer.flush();
             writer.close();
 
         } catch(IOException e){
