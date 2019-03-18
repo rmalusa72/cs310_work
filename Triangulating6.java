@@ -4,8 +4,6 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.time.ZonedDateTime;
 
-// Crashes 1.9 mil triangulations into the 17-gon 
-
 class Triangulating6{
 
     public static byte byte_modulo(byte a, byte b){

@@ -1,0 +1,15 @@
+SCORES
+python ver: time problem, got to 13 in two hours
+Triangulating: time problem, 208012 in minute and forty seconds
+(using doubly linked list for triangulations, arraylist for list of triangulations)
+Triangulating2: memory problem, 208012 in four seconds, 742900 in 13 seconds, 2674440 in 1 minute 6 seconds, then out of heap space
+(using doubly linked list of doubly linked lists for triangulations, treeset for list of triangulations, list alg of adding ears and rotating)
+Triangulating3: memory problem, 208012 in 3 seconds, 742900 in 10 seconds, 2674440 in 36 seconds, then ran out of heap space 2.6 mil into next
+(using arraylist of arraylists for triangulations, treeset for list of triangulations, array alg of adding ears in diff spots so more duplicates)
+Triangulating4: memory problem, 208012 in 2 seconds, 742900 in 5 seconds, 267440 in 20 seconds, then ran out of heap space 9 mil into next
+(using array of array of ints for triangulations, treeset for list, array alg)
+Triangulating45: memory problem, 208012 in 1 second, 742900 in 4 seconds, 267440 in 16 seconds, 9694845 in a minute 16, then ran out of heap space 2 mil into the next one
+(only change is removing old triangulations from tree as we go)
+Triangulating5: inadvertently made everything worse with booleans. i hate this one
+Triangulating6: memory problem, 9694845 in a minute 11, then ran out of heap space 3.2 mil into next one
+(changed int array to byte array)

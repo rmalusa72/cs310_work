@@ -4,10 +4,37 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.time.ZonedDateTime;
 
-class Triangulating45{
+class Triangulating7{
 
-    public static int int_modulo(int a, int b){
-        return (int)((a % b) + b) % b;
+    public static byte byte_modulo(byte a, byte b){
+        return (byte)(((a % b) + b) % b);
+    }
+
+    // inserts a number into the corresponding EMPTY five bits of a byte-based bit array
+    public static byte[] insert(byte[] bytearray, byte to_add, byte index){
+        int two_pwr = 16;
+        for(int i=index * 5; i<(index + 1)*5; i++){
+            System.out.println("i:" + i + "/two_pwr:" + two_pwr + "/to_add:" + to_add);
+            if (to_add >= two_pwr){
+                bytearray[i/8] = (byte) (bytearray[i/8] | (byte)(1 << (7 - byte_modulo((byte)i, (byte)8))));
+                to_add = (byte)(to_add - two_pwr);
+            }
+            two_pwr = two_pwr/2;
+        }
+        return bytearray;
+    }
+
+    public static byte get(byte[] bytearray, byte index){
+        int two_pwr = 16; 
+        byte rtn = 0;
+        for(int i=index * 5; i<(index + 1)*5; i++){
+            if((bytearray[i/8] & (byte)(1 << (7-byte_modulo((byte)i, (byte) 8)))) != 0){
+                rtn = (byte)(rtn + two_pwr);
+            }
+            two_pwr = two_pwr / 2; 
+        }
+
+        return rtn; 
     }
 
     // Figure out if one way of eliminating duplicates here is more efficient
@@ -37,16 +64,32 @@ class Triangulating45{
 
     public static void main(String[] args){
 
-        Triangulating45 t = new Triangulating45();
+        Triangulating7 t = new Triangulating7();
         t.run();
     }
 
     public void run(){
 
-        int[][] vertices3 = new int[3][];
-        vertices3[0] = new int[0];
-        vertices3[1] = new int[0];
-        vertices3[2] = new int[0];
+        byte[] test_bytearray = new byte[3];
+        insert(test_bytearray, (byte)7, (byte)0);
+        for(int i=0; i<test_bytearray.length; i++){
+            System.out.println(test_bytearray[i]);
+        }
+        insert(test_bytearray, (byte)17, (byte)1);
+        for(int i=0; i<test_bytearray.length; i++){
+            System.out.println(test_bytearray[i]);
+        }
+        System.out.println(get(test_bytearray, (byte)0));
+        System.out.println(get(test_bytearray, (byte)1));
+        System.out.println(get(test_bytearray, (byte)2));
+        
+        
+
+
+/*        byte[][] vertices3 = new byte[3][];
+        vertices3[0] = new byte[0];
+        vertices3[1] = new byte[0];
+        vertices3[2] = new byte[0];
         Triangulation triangle = new Triangulation(vertices3);
 
         TreeSet<Triangulation> ts = new TreeSet<Triangulation>();
@@ -55,16 +98,16 @@ class Triangulating45{
             ts = triangulate(i, ts);
             System.out.println(ZonedDateTime.now());
             System.out.println(ts.size());
-        }
+        }*/
 
     }
 
     private class Triangulation implements Comparable<Triangulation>{
 
-        int[][] vertices; 
+        byte[][] vertices; 
         int size;
 
-        public Triangulation(int[][] _vertices){
+        public Triangulation(byte[][] _vertices){
             vertices = _vertices;
             size = vertices.length;
         }
@@ -77,19 +120,19 @@ class Triangulating45{
         // n between 1 and size
         public Triangulation add_ear(int n){
 
-            int[][] new_vertices = new int[size+1][];
-            int[] new_connections;
-            int[] old_connections; 
+            byte[][] new_vertices = new byte[size+1][];
+            byte[] new_connections;
+            byte[] old_connections; 
 
             if(n == size){
                 // Copy zero vertex, adding connection to vertex n-1
                 old_connections = vertices[0];
-                new_connections = new int[old_connections.length + 1];
+                new_connections = new byte[old_connections.length + 1];
                 for(int i=0; i<old_connections.length; i++){
                     new_connections[i] = old_connections[i];
                 }
 
-                new_connections[old_connections.length] = n-1;
+                new_connections[old_connections.length] = (byte)(n-1);
                 new_vertices[0] = new_connections;
 
                 // Copy nodes up to last
@@ -99,7 +142,7 @@ class Triangulating45{
 
                 // Copy last node, adding connection to vertex 0
                 old_connections = vertices[size-1];
-                new_connections = new int[old_connections.length + 1];
+                new_connections = new byte[old_connections.length + 1];
                 new_connections[0] = 0;
                 for(int i=0; i<old_connections.length; i++){
                     new_connections[i+1] = old_connections[i];
@@ -107,7 +150,7 @@ class Triangulating45{
                 new_vertices[size-1] = new_connections;
 
                 // Add new node
-                new_vertices[size] = new int[0];
+                new_vertices[size] = new byte[0];
                 return new Triangulation(new_vertices);
 
             }
@@ -116,12 +159,12 @@ class Triangulating45{
             // Copy nodes up to inserted vertex, changing labels on connections after inserted vertex
             for(int i=0; i<(n-1); i++){
                 old_connections = vertices[i];
-                new_connections = new int[old_connections.length];
+                new_connections = new byte[old_connections.length];
                 for(int j=0; j<old_connections.length; j++){
                     if (old_connections[j] < n){
                         new_connections[j] = old_connections[j];
                     } else { 
-                        new_connections[j] = old_connections[j] + 1;
+                        new_connections[j] = (byte)(old_connections[j] + 1);
                     }
                 }
                 new_vertices[i] = new_connections;
@@ -129,42 +172,42 @@ class Triangulating45{
 
             // Handle node directly before inserted vertex; needs connection added to node now labeled n+1
             old_connections = vertices[n-1];
-            new_connections = new int[old_connections.length + 1];
+            new_connections = new byte[old_connections.length + 1];
             int k = 0;
             for(; k<old_connections.length && old_connections[k] < n; k++){
                 new_connections[k] = old_connections[k];
             }
-            new_connections[k] = n+1;
+            new_connections[k] = (byte)(n+1);
             for(; k < old_connections.length; k++){
-                new_connections[k+1] = old_connections[k] + 1;
+                new_connections[k+1] = (byte)(old_connections[k] + 1);
             }
             new_vertices[n-1] = new_connections;
 
             // add new node
-            new_vertices[n] = new int[0];
+            new_vertices[n] = new byte[0];
 
             // copy node after new node, adding new connection
             old_connections = vertices[n];
-            new_connections = new int[old_connections.length + 1];
+            new_connections = new byte[old_connections.length + 1];
             k = 0;
             for(; k < old_connections.length && old_connections[k] < n; k++){
                 new_connections[k] = old_connections[k];
             }
-            new_connections[k] = n-1;
+            new_connections[k] = (byte)(n-1);
             for(; k < old_connections.length; k++){
-                new_connections[k+1] = old_connections[k] + 1;
+                new_connections[k+1] = (byte)(old_connections[k] + 1);
             }
             new_vertices[n+1] = new_connections;
 
             // copy nodes after new node
             for(int i=n+1; i<size; i++){
                 old_connections = vertices[i];
-                new_connections = new int[old_connections.length];
+                new_connections = new byte[old_connections.length];
                 for(int j=0; j<old_connections.length; j++){
                     if (old_connections[j] < n){
                         new_connections[j] = old_connections[j];
                     } else { 
-                        new_connections[j] = old_connections[j] + 1;
+                        new_connections[j] = (byte)(old_connections[j] + 1);
                     }
                 }
                 new_vertices[i+1] = new_connections;             
@@ -194,8 +237,8 @@ class Triangulating45{
                     return 1;
                 }
 
-                int[] this_curr_list = this.vertices[i];
-                int[] other_curr_list = other.vertices[i];
+                byte[] this_curr_list = this.vertices[i];
+                byte[] other_curr_list = other.vertices[i];
 
                 if (this_curr_list.length > 0){
                     for(int j=0; j<this_curr_list.length; j++){
@@ -228,8 +271,8 @@ class Triangulating45{
                     return false; 
                 }
 
-                int[] this_curr_list = this.vertices[i];
-                int[] other_curr_list = other.vertices[i];
+                byte[] this_curr_list = this.vertices[i];
+                byte[] other_curr_list = other.vertices[i];
 
                 if (this_curr_list.length > 0){
                     for(int j=0; j<this_curr_list.length; j++){
@@ -249,7 +292,7 @@ class Triangulating45{
             for (int i=0; i<size; i++){
                 rtn = rtn + i + ": [";
                 if (vertices[i].length > 0){
-                    int[] curr_list = vertices[i];
+                    byte[] curr_list = vertices[i];
                     for(int j=0; j<curr_list.length; j++){
                         rtn = rtn + curr_list[j] + ",";
                     }
