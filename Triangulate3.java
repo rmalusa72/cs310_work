@@ -135,7 +135,9 @@ class Triangulate3{
                             }
                             writer.write(255);
                             num_triangulations = num_triangulations + 1; 
-
+			    if(num_triangulations % 100000 == 0){
+				System.out.println(num_triangulations);
+			    }
                             // if print, print this triangulation
                         }
 
@@ -154,6 +156,7 @@ class Triangulate3{
             System.out.println(e.getMessage());
             System.exit(1);
         }
+	System.out.println(num_triangulations);
         return num_triangulations;
     }
 
